@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Библиотека{% endblock %}
+{% block heading %}Повышенное задание 1: Flask + SQLite (CRUD){% endblock %}
+
+{% block content %}
+    <div class="toolbar">
+        <a class="button" href="{{ url_for('create') }}">+ Добавить книгу</a>
+
+        <form method="get" action="{{ url_for('index') }}" class="toolbar" style="margin:0">
+            <input type="text" name="q" value="{{ query }}" placeholder="Поиск по названию или автору">
+            <button type="submit" class="button-light">Найти</button>
+            {% if query %}
+                <a href="{{ url_for('index') }}">сбросить</a>
+            {% endif %}
+        </form>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Название</th>
+                    <th>Автор</th>
+                    <th class="num">Год</th>
+                    <th class="num">Страниц</th>
+                    <th>Прочитана</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in books %}
+                    <tr>
+                        <td>{{ book.title }}</td>
+                        <td>{{ book.author }}</td>
+                        <td class="num">{{ book.year }}</td>
+                        <td class="num">{{ book.pages }}</td>
+                        <td>
+                            <form class="inline" method="post"
+                                  action="{{ url_for('toggle_read', book_id=book.id, q=query) }}">
+                                <button type="submit" class="button-light">
+                                    {{ "✓ да" if book.is_read else "нет" }}
+                                </button>
+                            </form>
+                        </td>
+                        <td>
+                            <a class="button button-light" href="{{ url_for('edit', book_id=book.id) }}">Изменить</a>
+                            <form class="inline" method="post"
+                                  action="{{ url_for('delete', book_id=book.id) }}"
+                                  onsubmit='return confirm({{ ("Удалить «" ~ book.title ~ "»?")|tojson }});'>
+                                <button type="submit" class="button-danger">Удалить</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6">
+                            {% if query %}По запросу «{{ query }}» ничего не найдено{% else %}Книг пока нет{% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            {% if books %}
+            <tfoot>
+                <tr>
+                    <td colspan="3">Всего книг: {{ books|length }}, прочитано: {{ read_count }}</td>
+                    <td class="num">{{ total_pages }}</td>
+                    <td colspan="2"></td>
+                </tr>
+            </tfoot>
+            {% endif %}
+        </table>
+    </div>
+{% endblock %}

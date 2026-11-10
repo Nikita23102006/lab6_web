@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}{{ action }} книгу{% endblock %}
+{% block heading %}{{ action }} книгу{% endblock %}
+
+{% block content %}
+    {#
+        Одна форма на создание и редактирование.
+        Если у книги есть id — это редактирование.
+    #}
+    {% if book.id %}
+        {% set target = url_for('edit', book_id=book.id) %}
+    {% else %}
+        {% set target = url_for('create') %}
+    {% endif %}
+
+    <form method="post" action="{{ target }}" class="form-grid">
+        <label for="title">Название</label>
+        <input type="text" id="title" name="title" value="{{ book.title }}" required maxlength="200">
+
+        <label for="author">Автор</label>
+        <input type="text" id="author" name="author" value="{{ book.author }}" required maxlength="200">
+
+        <label for="year">Год издания</label>
+        <input type="number" id="year" name="year" value="{{ book.year }}" required>
+
+        <label for="pages">Страниц</label>
+        <input type="number" id="pages" name="pages" value="{{ book.pages }}" required min="1">
+
+        <label for="is_read">Прочитана</label>
+        <div>
+            <input type="checkbox" id="is_read" name="is_read" value="1" {% if book.is_read %}checked{% endif %}>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit">{{ action }}</button>
+            <a class="button button-light" href="{{ url_for('index') }}">Отмена</a>
+        </div>
+    </form>
+
+    <p class="muted">
+        Проверка полей есть и в браузере (атрибуты required, min), и на сервере —
+        браузерную легко обойти, поэтому серверная обязательна.
+    </p>
+{% endblock %}

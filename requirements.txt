@@ -1,0 +1,4 @@
+flask>=3.0
+fastapi>=0.110
+uvicorn>=0.29
+a2wsgi>=1.10
